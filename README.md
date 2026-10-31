@@ -8,4 +8,4 @@ Shout is a litttttle experiment in anonymous, real-time messaging. Just a place 
 
 ## Public instance
 
-You can try it out at sable.striberry.de.
+You can try it out at [shout.striberry.de](https://shout.striberry.de).
