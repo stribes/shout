@@ -14,13 +14,13 @@
     "bindings": [
       {
         "name": "SHOUT_ROOM",
-        "class_name": "ShoutRoom"
+        "class_name": "Room"
       }
     ]
   },
 
   "exports": {
-    "ShoutRoom": {
+    "Room": {
       "type": "durable-object",
       "storage": "sqlite"
     }
