@@ -153,6 +153,53 @@ button:disabled {
 	cursor: default;
 }
 
+#archives {
+	position: fixed;
+	left: 18px;
+	bottom: 18px;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--muted);
+	font-size: 0.8rem;
+}
+
+#archives.hidden,
+#show-all.hidden,
+#live.hidden {
+	display: none;
+}
+
+#archives button {
+	padding: 4px 9px;
+	border: 1px solid var(--line);
+	border-radius: 3px;
+	background: transparent;
+	color: var(--muted);
+	font-size: 0.8rem;
+	font-weight: 600;
+}
+
+#archives button:hover:not(:disabled) {
+	border-color: var(--accent);
+	color: var(--fg);
+	transform: none;
+}
+
+#archives button:disabled {
+	border-color: var(--line);
+	background: transparent;
+	color: var(--muted);
+	opacity: 0.35;
+}
+
+#archive-label {
+	min-width: 82px;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+
 .github {
 	position: fixed;
 	right: 18px;
@@ -174,4 +221,30 @@ button:disabled {
 		animation-duration: 0.01ms !important;
 		transition-duration: 0.01ms !important;
 	}
+}
+
+#replay-count {
+	min-width: 48px;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+#replay-track {
+	width: 80px;
+	height: 4px;
+	overflow: hidden;
+	background: var(--line);
+	border-radius: 4px;
+}
+
+#replay-progress {
+	width: 0%;
+	height: 100%;
+	background: var(--accent);
+	border-radius: inherit;
+	transition: width 100ms linear;
+}
+
+#archives .hidden {
+	display: none;
 }

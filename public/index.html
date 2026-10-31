@@ -18,7 +18,15 @@
 			<div id="empty-state">nothing here yet</div>
 
 			<form id="shout-form" autocomplete="off">
-				<textarea id="text" name="text" maxlength="140" rows="2" placeholder="whats on your mind?" aria-label="Your message" required></textarea>
+				<textarea
+					id="text"
+					name="text"
+					maxlength="140"
+					rows="2"
+					placeholder="whats on your mind?"
+					aria-label="Your message"
+					required
+				></textarea>
 
 				<div class="row">
 					<span id="counter">0 / 140</span>
@@ -34,6 +42,21 @@
 					/>
 				</svg>
 			</a>
+
+			<div id="archives" class="hidden">
+				<button id="older" type="button" aria-label="Older archive">←</button>
+				<span id="archive-label">live</span>
+				<button id="newer" type="button" aria-label="Newer archive">→</button>
+				<button id="show-all" type="button" class="hidden">show all</button>
+				<button id="live" type="button" class="hidden">live</button>
+
+				<span id="replay-count">messages 0 / 0</span>
+				<button id="replay-speed" type="button" title="Change replay speed">1x</button>
+
+				<div id="replay-track" role="progressbar" aria-label="Replay progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+					<div id="replay-progress"></div>
+				</div>
+			</div>
 		</main>
 	</body>
 </html>
