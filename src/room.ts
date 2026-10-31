@@ -5,8 +5,25 @@ import type { Shout, ServerMessage } from "./types";
 const MAX_MESSAGE_LENGTH = 140;
 const MAX_PAYLOAD_BYTES = 2_048;
 const MAX_SHOUTS = 500;
+const RATE_LIMIT_WINDOW_MS = 10_000;
+const RATE_LIMIT_MAX_MESSAGES = 5;
+const RATE_LIMIT_CLEANUP_MS = 60_000;
+
+async function hashIp(ip: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(ip),
+  );
+
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+}
 
 export class Room extends DurableObject<Env> {
+  private readonly rateLimits = new Map<string, number[]>();
+  private lastRateLimitCleanup = Date.now();
+
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
 
@@ -29,10 +46,14 @@ export class Room extends DurableObject<Env> {
       });
     }
 
+    const ip = request.headers.get("CF-Connecting-IP");
+    const rateLimitKey = ip ? await hashIp(ip) : crypto.randomUUID();
+
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
 
     this.ctx.acceptWebSocket(server);
+    server.serializeAttachment({ rateLimitKey });
 
     this.send(server, {
       type: "history",
@@ -49,6 +70,11 @@ export class Room extends DurableObject<Env> {
     socket: WebSocket,
     message: string | ArrayBuffer,
   ): Promise<void> {
+    if (!this.allowMessage(this.getRateLimitKey(socket))) {
+      this.sendError(socket, "You're shouting too fast. Please wait a moment.");
+      return;
+    }
+
     if (typeof message !== "string") {
       this.sendError(socket, "Binary messages are not supported.");
       return;
@@ -130,6 +156,56 @@ export class Room extends DurableObject<Env> {
       type: "shout",
       shout,
     });
+  }
+
+  private getRateLimitKey(socket: WebSocket): string {
+    const attachment = socket.deserializeAttachment() as {
+      rateLimitKey?: unknown;
+    } | null;
+
+    return typeof attachment?.rateLimitKey === "string"
+      ? attachment.rateLimitKey
+      : "unknown";
+  }
+
+  private allowMessage(key: string): boolean {
+    const now = Date.now();
+    const cutoff = now - RATE_LIMIT_WINDOW_MS;
+
+    let timestamps = this.rateLimits.get(key);
+
+    if (!timestamps) {
+      timestamps = [];
+      this.rateLimits.set(key, timestamps);
+    }
+
+    while (timestamps.length > 0 && timestamps[0] <= cutoff) {
+      timestamps.shift();
+    }
+
+    if (timestamps.length >= RATE_LIMIT_MAX_MESSAGES) {
+      return false;
+    }
+
+    timestamps.push(now);
+
+    if (now - this.lastRateLimitCleanup >= RATE_LIMIT_CLEANUP_MS) {
+      this.cleanupRateLimits(cutoff);
+      this.lastRateLimitCleanup = now;
+    }
+
+    return true;
+  }
+
+  private cleanupRateLimits(cutoff: number): void {
+    for (const [key, timestamps] of this.rateLimits) {
+      if (
+        timestamps.length === 0 ||
+        timestamps[timestamps.length - 1] <= cutoff
+      ) {
+        this.rateLimits.delete(key);
+      }
+    }
   }
 
   private getShouts(): Shout[] {
