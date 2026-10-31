@@ -1,0 +1,28 @@
+
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "shout",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-30",
+
+  "assets": {
+    "directory": "./public",
+    "run_worker_first": ["/ws"]
+  },
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SHOUT_ROOM",
+        "class_name": "ShoutRoom"
+      }
+    ]
+  },
+
+  "exports": {
+    "ShoutRoom": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
+}
