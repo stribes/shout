@@ -2,6 +2,8 @@
 	color-scheme: dark;
 
 	--bg: #1c1c1c;
+	--bg2: #232323;
+	--bg3: #2b2b2b;
 	--fg: #ede6e3;
 	--muted: #9a9391;
 	--line: #454344;
@@ -79,18 +81,20 @@ body {
 	z-index: 10;
 	width: min(460px, calc(100vw - 32px));
 	transform: translate(-50%, -50%);
+	background-color: var(--bg2);
+	padding: 20px;
 }
 
 textarea {
 	display: block;
 	width: 100%;
-	padding: 0 0 8px;
+	padding: 8px;
 	resize: none;
 	border: 0;
 	border-bottom: 2px solid var(--accent);
 	border-radius: 0;
 	outline: none;
-	background: transparent;
+	background: var(--bg3);
 	caret-color: var(--accent);
 	color: var(--fg);
 	font: inherit;
@@ -127,7 +131,6 @@ textarea::placeholder {
 button {
 	padding: 6px 14px;
 	border: 0;
-	border-radius: 3px;
 	background: var(--accent);
 	color: var(--on-accent);
 	font: inherit;
