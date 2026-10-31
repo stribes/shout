@@ -4,7 +4,7 @@ import type { Shout, ServerMessage } from "./types";
 
 const MAX_MESSAGE_LENGTH = 140;
 const MAX_PAYLOAD_BYTES = 2_048;
-const MAX_SHOUTS = 500;
+const MAX_SHOUTS = 10000; // 10000 until I can get replays working
 const RATE_LIMIT_WINDOW_MS = 10_000;
 const RATE_LIMIT_MAX_MESSAGES = 5;
 const RATE_LIMIT_CLEANUP_MS = 60_000;
